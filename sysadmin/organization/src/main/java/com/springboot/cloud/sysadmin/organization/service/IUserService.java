@@ -4,23 +4,25 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.springboot.cloud.sysadmin.organization.entity.param.UserQueryParam;
 import com.springboot.cloud.sysadmin.organization.entity.po.User;
+import com.springboot.cloud.sysadmin.organization.entity.vo.UserVo;
 
 public interface IUserService {
     /**
      * 获取用户
      *
-     * @param id
-     * @return
+     * @param id 用户id
+     * @return UserVo
      */
-    User get(long id);
+    UserVo get(String id);
 
     /**
-     * 根据用户名获取用户信息
+     * 根据用户唯一标识获取用户信息
+     * 目前用户标识不用户名或mobile
      *
-     * @param username
+     * @param uniqueId
      * @return
      */
-    User getByUsername(String username);
+    User getByUniqueId(String uniqueId);
 
     /**
      * 新增用户
@@ -49,6 +51,5 @@ public interface IUserService {
      *
      * @param id
      */
-    void delete(long id);
-
+    void delete(String id);
 }

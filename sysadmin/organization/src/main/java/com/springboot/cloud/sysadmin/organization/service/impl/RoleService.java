@@ -1,6 +1,8 @@
 package com.springboot.cloud.sysadmin.organization.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.springboot.cloud.sysadmin.organization.dao.RoleMapper;
 import com.springboot.cloud.sysadmin.organization.dao.UserRoleMapper;
 import com.springboot.cloud.sysadmin.organization.entity.param.RoleQueryParam;
@@ -8,6 +10,7 @@ import com.springboot.cloud.sysadmin.organization.entity.po.Role;
 import com.springboot.cloud.sysadmin.organization.entity.po.UserRole;
 import com.springboot.cloud.sysadmin.organization.service.IRoleService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -33,7 +36,7 @@ public class RoleService implements IRoleService {
 
     @Override
     @CacheEvict(value = "role", key = "#root.targetClass.name+'-'+#id")
-    public void delete(long id) {
+    public void delete(String id) {
         roleMapper.deleteById(id);
     }
 
@@ -45,22 +48,27 @@ public class RoleService implements IRoleService {
 
     @Override
     @Cacheable(value = "role", key = "#root.targetClass.name+'-'+#id")
-    public Role get(long id) {
+    public Role get(String id) {
         return roleMapper.selectById(id);
     }
 
     @Override
-    public List<Role> query(long userId) {
+    public List<Role> get() {
+        return roleMapper.selectList(null);
+    }
+
+    @Override
+    public List<Role> query(String userId) {
         List<UserRole> userRoles = userRoleMapper.selectList(new QueryWrapper<UserRole>().eq("user_id", userId));
         return roleMapper.selectBatchIds(userRoles.stream().map(userRole -> userRole.getRoleId()).collect(Collectors.toList()));
     }
 
     @Override
-    public List<Role> query(RoleQueryParam roleQueryParam) {
+    public IPage<Role> query(Page page, RoleQueryParam roleQueryParam) {
         QueryWrapper<Role> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq(null != roleQueryParam.getName(), "name", roleQueryParam.getName());
-        queryWrapper.eq(null != roleQueryParam.getCode(), "code", roleQueryParam.getCode());
-        return roleMapper.selectList(queryWrapper);
+        queryWrapper.eq(StringUtils.isNotBlank(roleQueryParam.getName()), "name", roleQueryParam.getName());
+        queryWrapper.eq(StringUtils.isNotBlank(roleQueryParam.getCode()), "code", roleQueryParam.getCode());
+        return roleMapper.selectPage(page, queryWrapper);
     }
 
 }

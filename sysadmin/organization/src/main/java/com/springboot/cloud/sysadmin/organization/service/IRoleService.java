@@ -1,5 +1,7 @@
 package com.springboot.cloud.sysadmin.organization.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.springboot.cloud.sysadmin.organization.entity.param.RoleQueryParam;
 import com.springboot.cloud.sysadmin.organization.entity.po.Role;
 
@@ -12,7 +14,14 @@ public interface IRoleService {
      * @param id
      * @return
      */
-    Role get(long id);
+    Role get(String id);
+
+    /**
+     * 获取所有角色
+     *
+     * @return
+     */
+    List<Role> get();
 
     /**
      * 新增角色
@@ -27,14 +36,14 @@ public interface IRoleService {
      *
      * @return
      */
-    List<Role> query(RoleQueryParam roleQueryParam);
+    IPage<Role> query(Page page, RoleQueryParam roleQueryParam);
 
     /**
      * 根据用户id查询用户拥有的角色
      *
      * @return
      */
-    List<Role> query(long userId);
+    List<Role> query(String userId);
 
     /**
      * 更新角色信息
@@ -48,5 +57,5 @@ public interface IRoleService {
      *
      * @param id
      */
-    void delete(long id);
+    void delete(String id);
 }
